@@ -1,0 +1,31 @@
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #1a1a1a; color: #fff; padding: 15px; text-align: center; }
+header { margin-bottom: 25px; background: #ff3e3e; padding: 15px; border-radius: 10px; box-shadow: 0 4px 15px rgba(255,62,62,0.4); }
+h1 { font-size: 24px; margin-bottom: 5px; }
+#score { font-weight: bold; font-size: 14px; background: rgba(0,0,0,0.2); display: inline-block; padding: 5px 10px; border-radius: 15px; }
+.hidden { display: none !important; }
+.grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin-bottom: 30px; }
+.card { background: #2a2a2a; padding: 20px 10px; border-radius: 15px; border: 3px solid #333; transition: all 0.3s ease; }
+.card.locked { filter: grayscale(100%); opacity: 0.3; border-style: dashed; }
+.card .pixel-avatar { font-size: 45px; margin-bottom: 10px; }
+.card h3 { font-size: 16px; margin-bottom: 8px; }
+.card .status { font-size: 12px; background: #444; padding: 2px 8px; border-radius: 10px; }
+button { background: #ff3e3e; color: white; border: none; padding: 15px 30px; font-size: 18px; border-radius: 30px; cursor: pointer; font-weight: bold; width: 100%; max-width: 300px; margin-top: 10px; }
+.btn-secondary { background: #555; }
+.btn-reset { background: #333; color: #999; font-size: 14px; padding: 10px 20px; border-radius: 10px; width: auto; border: 1px solid #444; }
+.btn-reset:hover { background: #cc3333; color: white; border-color: #cc3333; }
+
+/* Scanner */
+#scanner-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #111; z-index: 10; display: flex; align-items: center; justify-content: center; }
+.scanner-container { width: 100%; max-width: 400px; padding: 20px; text-align: center; }
+.camera-box { width: 300px; height: 300px; margin: 15px auto; border-radius: 20px; overflow: hidden; border: 4px solid #ff3e3e; background: #000; }
+#webcam { width: 100%; height: 100%; object-fit: cover; }
+#scan-status { font-size: 14px; color: #aaa; margin: 10px 0; min-height: 20px; }
+
+
+/* Popup */
+#popup-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); display: flex; align-items: center; justify-content: center; z-index: 20; }
+.popup-content { background: #2a2a2a; padding: 25px; border-radius: 20px; width: 85%; max-width: 400px; border: 3px solid #2ecc71; }
+.popup-badge { background: #2ecc71; color: black; display: inline-block; padding: 5px 10px; font-weight: bold; border-radius: 5px; margin-bottom: 15px; }
+#popup-title { margin-bottom: 15px; color: #2ecc71; }
+#popup-desc { margin-bottom: 20px; line-height: 1.5; color: #ddd; }

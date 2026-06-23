@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pokédex Communal</title>
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#ff3e3e">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <header>
+        <h1>Pokédex de la Commune</h1>
+        <div id="score">Découvertes : <span id="captured-count">0</span> / <span id="total-count">0</span></div>
+    </header>
+
+    <main id="pokedex-screen">
+        <h2>Ta Collection Pixel Art</h2>
+        
+        <div class="grid" id="pokedex-grid"></div>
+
+        <button id="btn-scan">📷 Scanner un Pixel Art</button>
+        <button id="btn-reset" class="btn-reset">🔄 Réinitialiser le Pokédex</button>
+    </main>
+
+    <div id="scanner-screen" class="hidden">
+        <div class="scanner-container">
+            <h2>Pointe vers l'œuvre</h2>
+            <div class="camera-box">
+                <video id="webcam" autoplay playsinline></video>
+            </div>
+            <div id="scan-status">Chargement de l'IA...</div>
+            <button id="btn-close-scan" class="btn-secondary">Annuler</button>
+        </div>
+    </div>
+
+    <div id="popup-screen" class="hidden">
+        <div class="popup-content">
+            <div class="popup-badge">✨ NOUVEAU ✨</div>
+            <h2 id="popup-title">Nom du lieu</h2>
+            <p id="popup-desc">Description...</p>
+            <button id="btn-close-popup">Ajouter au Pokédex</button>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest/dist/tf.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@latest/dist/teachablemachine-image.min.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>

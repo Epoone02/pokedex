@@ -1,0 +1,208 @@
+// ============================================================
+// CONFIGURATION — adapte ici tes lieux et personnages
+// Les noms de classes DOIVENT correspondre exactement à ceux
+// de Teachable Machine (minuscules, sans espaces ni accents de préférence)
+// ============================================================
+const database = {
+    "mairie": {
+        title: "La Mairie",
+        desc: "Construite en 1850 au cœur du village, elle possède une architecture typique.",
+        avatar: "🏛️"
+    },
+    "eglise": {
+        title: "L'Église Saint-Martin",
+        desc: "Son clocher en pierre de taille date du XIIe siècle et culmine à plus de 30 mètres.",
+        avatar: "⛪"
+    },
+    "parc": {
+        title: "Le Parc Communal",
+        desc: "Un havre de paix de 3 hectares avec des arbres centenaires et un étang de pêche.",
+        avatar: "🌳"
+    },
+    // Exemple de nouveau personnage ajouté facilement :
+
+};
+
+const SEUIL_CONFIANCE = 0.85;
+const MODEL_PATH = "./model/";
+
+// ============================================================
+
+let model = null;
+let webcamStream = null;
+let predictionLoop = null;
+let detectedId = null;
+
+// Au chargement de la page
+window.addEventListener('DOMContentLoaded', () => {
+    generateGrid(); // 1. On génère les cartes automatiquement
+    checkSavedItems(); // 2. On vérifie celles qui sont débloquées
+});
+
+// Génère les cartes HTML en fonction de la database
+function generateGrid() {
+    const grid = document.getElementById('pokedex-grid');
+    grid.innerHTML = ''; // Vide la grille
+    
+    const totalItems = Object.keys(database).length;
+    document.getElementById('total-count').innerText = totalItems;
+
+    for (const [id, data] of Object.entries(database)) {
+        const card = document.createElement('div');
+        card.className = 'card locked';
+        card.id = `item-${id}`;
+        card.innerHTML = `
+            <div class="pixel-avatar">${data.avatar}</div>
+            <h3>${data.title}</h3>
+            <span class="status">Inconnu</span>
+        `;
+        grid.appendChild(card);
+    }
+}
+
+// Vérifie et affiche les items déjà débloqués
+function checkSavedItems() {
+    let count = 0;
+    Object.keys(database).forEach(id => {
+        if (localStorage.getItem("pokedex_" + id) === "true") {
+            unlockCard(id);
+            count++;
+        }
+    });
+    document.getElementById('captured-count').innerText = count;
+}
+
+function unlockCard(id) {
+    const card = document.getElementById(`item-${id}`);
+    if (!card) return;
+    card.classList.remove('locked');
+    card.querySelector('.status').innerText = "Débloqué !";
+    card.querySelector('.status').style.background = "#2ecc71";
+}
+
+// ============================================================
+// SCANNER
+// ============================================================
+
+document.getElementById('btn-scan').addEventListener('click', async () => {
+    document.getElementById('pokedex-screen').classList.add('hidden');
+    document.getElementById('scanner-screen').classList.remove('hidden');
+    await startScanner();
+});
+
+async function startScanner() {
+    setStatus("Démarrage de la caméra...");
+
+    try {
+        webcamStream = await navigator.mediaDevices.getUserMedia({
+            video: { facingMode: { ideal: "environment" } }
+        });
+        document.getElementById('webcam').srcObject = webcamStream;
+    } catch (err) {
+        setStatus("❌ Erreur caméra : " + err.message);
+        return;
+    }
+
+    if (!model) {
+        setStatus("Chargement de l'IA locale...");
+        try {
+            model = await tmImage.load(MODEL_PATH + "model.json", MODEL_PATH + "metadata.json");
+            setStatus("✅ IA chargée — pointe vers un Pixel Art !");
+        } catch (err) {
+            setStatus("❌ Modèle introuvable. Vérifie le dossier ./model/");
+            console.error(err);
+            return;
+        }
+    } else {
+        setStatus("✅ Pointe vers un Pixel Art !");
+    }
+
+    predictionLoop = setInterval(predict, 500);
+}
+
+async function predict() {
+    const video = document.getElementById('webcam');
+    if (!model || video.readyState < 2) return;
+
+    const predictions = await model.predict(video);
+    
+    // On a retiré l'affichage des jauges ici (renderBars)
+
+    const best = predictions.reduce((a, b) => a.probability > b.probability ? a : b);
+
+    if (best.probability >= SEUIL_CONFIANCE) {
+        const id = best.className.toLowerCase().trim()
+            .normalize("NFD").replace(/[\u0300-\u036f]/g, "") 
+            .replace(/\s+/g, "_"); 
+
+        if (database[id]) {
+            stopScanner();
+            detectedId = id;
+            showPopup(id);
+        } else {
+            const idBrut = best.className.toLowerCase().trim();
+            if (database[idBrut]) {
+                stopScanner();
+                detectedId = idBrut;
+                showPopup(idBrut);
+            }
+        }
+    }
+}
+
+function setStatus(msg) {
+    document.getElementById('scan-status').innerText = msg;
+}
+
+function stopScanner() {
+    clearInterval(predictionLoop);
+    predictionLoop = null;
+    if (webcamStream) {
+        webcamStream.getTracks().forEach(t => t.stop());
+        webcamStream = null;
+    }
+    document.getElementById('webcam').srcObject = null;
+}
+
+document.getElementById('btn-close-scan').addEventListener('click', () => {
+    stopScanner();
+    document.getElementById('scanner-screen').classList.add('hidden');
+    document.getElementById('pokedex-screen').classList.remove('hidden');
+});
+
+// ============================================================
+// POPUP
+// ============================================================
+
+function showPopup(id) {
+    localStorage.setItem("pokedex_" + id, "true");
+    document.getElementById('popup-title').innerText = database[id].title;
+    document.getElementById('popup-desc').innerText = database[id].desc;
+    document.getElementById('scanner-screen').classList.add('hidden');
+    document.getElementById('popup-screen').classList.remove('hidden');
+}
+
+document.getElementById('btn-close-popup').addEventListener('click', () => {
+    document.getElementById('popup-screen').classList.add('hidden');
+    document.getElementById('pokedex-screen').classList.remove('hidden');
+    checkSavedItems();
+});
+
+// ============================================================
+// RESET
+// ============================================================
+
+document.getElementById('btn-reset').addEventListener('click', () => {
+    if (confirm("Voulez-vous effacer votre progression et vider le Pokédex ?")) {
+        Object.keys(database).forEach(id => {
+            localStorage.removeItem("pokedex_" + id);
+            const card = document.getElementById(`item-${id}`);
+            if (card) {
+                card.classList.add('locked');
+                card.querySelector('.status').innerText = "Inconnu";
+                card.querySelector('.status').style.background = "#444";
+            }
+        });
+        document.getElementById('captured-count').innerText = "0";
+    }
+});
