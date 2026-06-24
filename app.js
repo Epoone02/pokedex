@@ -1,55 +1,62 @@
-// ============================================================
-// CONFIGURATION — adapte ici tes lieux et personnages
-// Les noms de classes DOIVENT correspondre exactement à ceux
-// de Teachable Machine (minuscules, sans espaces ni accents de préférence)
-// ============================================================
+// ============================================================================
+// 📊 BASE DE DONNÉES DES ŒUVRES (FACILE À MODIFIER)
+// Pour ajouter un dessin d'enfant, recopie le bloc entre accolades { } 
+// et veille à ce que la clé (ex: "chat_pixel") corresponde EXACTEMENT au nom
+// de la classe configurée lors de l'entraînement dans Teachable Machine.
+// ============================================================================
 const database = {
-    "mairie": {
-        title: "crane",
-        desc: " c'est un test la team mais ça scan bien le crane",
-        avatar: "🏛️"
+    "chat_pixel": {
+        title: "Le Chat Roux",
+        desc: "Un magnifique petit chat assis, réalisé entièrement avec des carrés de papier mosaïque multicolores.",
+        avatar: "🐱",         // L'émoji ou icône affiché sur la carte verrouillée/déverrouillée
+        author: "Léo",        // Prénom de l'enfant
+        classLevel: "CM1",    // Sa classe
+        date: "Mai 2026"      // Date de création du dessin
     },
-    "eglise": {
-        title: "Stitch",
-        desc: "une creature de film disney guez de fou en vrai",
-        avatar: "⛪"
-    },
-    "parc": {
-        title: "BULBIZAR",
-        desc: "c'est un POKEMON WOWOWOWOWWOOW.",
-        avatar: "🌳"
-    },
-    // Exemple de nouveau personnage ajouté facilement :
-
+    "maison_pixel": {
+        title: "La Maison Mystérieuse",
+        desc: "Une grande maison d'allure ancienne faite à la peinture au pochoir pixel art.",
+        avatar: "🏠",
+        author: "Emma",
+        classLevel: "CE2",
+        date: "Octobre 2025"
+    }
 };
 
+// ============================================================================
+// ⚙️ PARAMÈTRES TECHNIQUES
+// ============================================================================
+// Seuil de confiance (0.85 = l'IA doit être sûre à 85% avant de valider le scan)
 const SEUIL_CONFIANCE = 0.85;
-const MODEL_PATH = "./model/";
 
-// ============================================================
+// Chemin vers les fichiers de ton IA (laissés en relatif pour GitHub)
+const MODEL_PATH = "./model/"; 
 
-let model = null;
-let webcamStream = null;
-let predictionLoop = null;
-let detectedId = null;
+// Variables globales de l'application
+let model = null;          // Contiendra le modèle IA chargé
+let webcamStream = null;   // Contiendra le flux vidéo de la caméra
+let predictionLoop = null; // Contiendra la boucle de rafraîchissement du scanner
 
-// Au chargement de la page
+// ============================================================================
+// 🏁 DEMARRAGE ET INITIALISATION
+// ============================================================================
 window.addEventListener('DOMContentLoaded', () => {
-    generateGrid(); // 1. On génère les cartes automatiquement
-    checkSavedItems(); // 2. On vérifie celles qui sont débloquées
+    generateGrid();     // 1. Crée les cartes visuelles dans la page
+    checkSavedItems();  // 2. Vérifie la mémoire pour débloquer celles déjà trouvées
 });
 
-// Génère les cartes HTML en fonction de la database
+// Génère automatiquement les cartes HTML à partir de la database ci-dessus
 function generateGrid() {
     const grid = document.getElementById('collection-grid');
-    grid.innerHTML = ''; // Vide la grille
+    grid.innerHTML = ''; // Nettoie la grille
     
-    const totalItems = Object.keys(database).length;
-    document.getElementById('total-count').innerText = totalItems;
+    // Met à jour le nombre total d'œuvres existantes dans le compteur
+    document.getElementById('total-count').innerText = Object.keys(database).length;
 
+    // Crée une carte HTML pour chaque ligne de la database
     for (const [id, data] of Object.entries(database)) {
         const card = document.createElement('div');
-        card.className = 'card locked';
+        card.className = 'card locked'; // Verrouillée par défaut (grisée)
         card.id = `item-${id}`;
         card.innerHTML = `
             <div class="pixel-avatar">${data.avatar}</div>
@@ -60,111 +67,114 @@ function generateGrid() {
     }
 }
 
-// Vérifie et affiche les items déjà débloqués
+// Parcourt la mémoire locale du téléphone pour déverrouiller les dessins trouvés
 function checkSavedItems() {
     let count = 0;
     Object.keys(database).forEach(id => {
-        if (localStorage.getItem("collection_" + id) === "true") {
+        // Nouvelle clé neutre pour éviter les conflits et références à nintendo
+        if (localStorage.getItem("art_scanned_" + id) === "true") {
             unlockCard(id);
             count++;
         }
     });
+    // Met à jour le score (ex: 2 / 3)
     document.getElementById('captured-count').innerText = count;
 }
 
+// Active visuellement une carte trouvée et la rend interactive
 function unlockCard(id) {
     const card = document.getElementById(`item-${id}`);
     if (!card) return;
-    card.classList.remove('locked');
-    card.querySelector('.status').innerText = "Débloqué !";
-    card.querySelector('.status').style.background = "#2ecc71";
+    
+    card.classList.remove('locked'); // Enlève le filtre gris
+    card.querySelector('.status').innerText = "Découvert !";
+    card.querySelector('.status').style.background = "#2ecc71"; // Vert
+    
+    // ACTION : Rendre la carte cliquable pour réafficher sa description complète
+    card.onclick = () => showPopup(id, true); // true = mode consultation
+    card.style.cursor = "pointer";
 }
 
-// ============================================================
-// SCANNER
-// ============================================================
+// ============================================================================
+// 📷 GESTION DU SCANNER CAMÉRA
+// ============================================================================
 
+// Clic sur le gros bouton d'activation du scanner
 document.getElementById('btn-scan').addEventListener('click', async () => {
     document.getElementById('pokedex-screen').classList.add('hidden');
     document.getElementById('scanner-screen').classList.remove('hidden');
     await startScanner();
 });
 
+// Lance la caméra arrière du smartphone et charge le modèle TensorFlow
 async function startScanner() {
     setStatus("Démarrage de la caméra...");
-
     try {
-        webcamStream = await navigator.mediaDevices.getUserMedia({
-            video: { facingMode: { ideal: "environment" } }
-        });
+        // Demande l'accès à la caméra arrière (environment)
+        webcamStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: { ideal: "environment" } } });
         document.getElementById('webcam').srcObject = webcamStream;
     } catch (err) {
         setStatus("❌ Erreur caméra : " + err.message);
         return;
     }
 
+    // Charge le modèle d'Intelligence Artificielle s'il n'est pas déjà en mémoire
     if (!model) {
-        setStatus("Chargement de l'IA locale...");
+        setStatus("Chargement de l'IA...");
         try {
             model = await tmImage.load(MODEL_PATH + "model.json", MODEL_PATH + "metadata.json");
-            setStatus("✅ IA chargée — pointe vers un Pixel Art !");
+            setStatus("✅ Pointe vers une œuvre !");
         } catch (err) {
-            setStatus("❌ Modèle introuvable. Vérifie le dossier ./model/");
-            console.error(err);
+            setStatus("❌ Erreur de chargement du modèle IA");
             return;
         }
     } else {
-        setStatus("✅ Pointe vers un Pixel Art !");
+        setStatus("✅ Pointe vers une œuvre !");
     }
 
+    // Lance l'analyse d'image toutes les 500ms (2 fois par seconde)
     predictionLoop = setInterval(predict, 500);
 }
 
+// Analyse ce que voit la caméra
 async function predict() {
     const video = document.getElementById('webcam');
     if (!model || video.readyState < 2) return;
 
     const predictions = await model.predict(video);
-    
-    // Cherche la prédiction la plus haute
+    // Trouve la prédiction ayant le plus haut pourcentage de certitude
     const best = predictions.reduce((a, b) => a.probability > b.probability ? a : b);
 
+    // Si l'IA est sûre d'elle (ex: > 85%)
     if (best.probability >= SEUIL_CONFIANCE) {
-        // Normalise le nom de la classe
-        let id = best.className.toLowerCase().trim()
-            .normalize("NFD").replace(/[\u0300-\u036f]/g, "") 
-            .replace(/\s+/g, "_"); 
+        // Nettoie l'identifiant (retire les majuscules, espaces et accents au cas où)
+        let id = best.className.toLowerCase().trim().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/\s+/g, "_"); 
+        if (!database[id]) id = best.className.toLowerCase().trim();
 
-        // Si l'ID normalisé n'existe pas, on tente l'ID brut
-        if (!database[id]) {
-            id = best.className.toLowerCase().trim();
-        }
-
-        // Si l'objet reconnu est bien dans notre base de données
+        // Si l'objet identifié fait bien partie de notre base de données
         if (database[id]) {
-            // On vérifie si l'utilisateur l'a DÉJÀ débloqué
-            const isAlreadyCaptured = localStorage.getItem("collection_" + id) === "true";
-
+            const isAlreadyCaptured = localStorage.getItem("art_scanned_" + id) === "true";
+            
             if (isAlreadyCaptured) {
-                // L'objet est déjà connu : on ne stoppe PAS le scanner, on change juste le texte
-                setStatus("⭐ Déjà capturé : " + database[id].title);
+                // DOUBLON : On ne stoppe pas le scanner, on prévient juste poliment l'utilisateur
+                setStatus("⭐ Déjà découvert : " + database[id].title);
             } else {
-                // C'est une NOUVELLE découverte ! On stoppe tout et on affiche le popup
+                // NOUVEAUTÉ : On coupe la caméra et on ouvre le pop-up de célébration
                 stopScanner();
-                detectedId = id;
-                showPopup(id);
+                showPopup(id, false); // false = mode nouvelle découverte
             }
         }
     } else {
-        // Si la certitude redescend en dessous de 85%, on remet le texte par défaut
         setStatus("✅ Pointe vers une œuvre !");
     }
 }
 
+// Met à jour la petite ligne de texte d'état sous la caméra
 function setStatus(msg) {
     document.getElementById('scan-status').innerText = msg;
 }
 
+// Éteint proprement la caméra et nettoie la boucle pour économiser la batterie
 function stopScanner() {
     clearInterval(predictionLoop);
     predictionLoop = null;
@@ -175,43 +185,69 @@ function stopScanner() {
     document.getElementById('webcam').srcObject = null;
 }
 
+// Bouton Annuler du scanner
 document.getElementById('btn-close-scan').addEventListener('click', () => {
     stopScanner();
     document.getElementById('scanner-screen').classList.add('hidden');
     document.getElementById('pokedex-screen').classList.remove('hidden');
 });
 
-// ============================================================
-// POPUP
-// ============================================================
+// ============================================================================
+// 📜 AFFICHAGE DES DESCRIPTIONS (POP-UP)
+// ============================================================================
 
-function showPopup(id) {
-    localStorage.setItem("pokedex_" + id, "true");
-    document.getElementById('popup-title').innerText = database[id].title;
-    document.getElementById('popup-desc').innerText = database[id].desc;
+// Remplit et affiche la fiche descriptive de l'objet
+function showPopup(id, isConsultation) {
+    const data = database[id];
+    
+    // Injecte les informations dans le HTML
+    document.getElementById('popup-title').innerText = data.title;
+    document.getElementById('popup-author').innerText = data.author;
+    document.getElementById('popup-class').innerText = data.classLevel;
+    document.getElementById('popup-date').innerText = data.date;
+    document.getElementById('popup-desc').innerText = data.desc;
+
+    const badge = document.getElementById('popup-badge');
+    const btnClose = document.getElementById('btn-close-popup');
+
+    if (isConsultation) {
+        // Mode consultation : on cache le badge "Nouveau" et on adapte le bouton
+        badge.style.display = "none";
+        btnClose.innerText = "Fermer la fiche";
+    } else {
+        // Mode nouvelle découverte : on sauvegarde dans le téléphone et on affiche le badge brillant
+        localStorage.setItem("art_scanned_" + id, "true");
+        badge.style.display = "inline-block";
+        btnClose.innerText = "Ajouter à ma collection";
+    }
+
+    // Affiche la fenêtre pop-up au premier plan
     document.getElementById('scanner-screen').classList.add('hidden');
     document.getElementById('popup-screen').classList.remove('hidden');
 }
 
+// Fermeture de la pop-up
 document.getElementById('btn-close-popup').addEventListener('click', () => {
     document.getElementById('popup-screen').classList.add('hidden');
     document.getElementById('pokedex-screen').classList.remove('hidden');
-    checkSavedItems();
+    checkSavedItems(); // Actualise l'affichage global
 });
 
-// ============================================================
-// RESET
-// ============================================================
-
+// ============================================================================
+// 🔄 RÉINITIALISATION DE LA SAUVEGARDE
+// ============================================================================
 document.getElementById('btn-reset').addEventListener('click', () => {
-    if (confirm("Voulez-vous effacer votre progression et vider le Pokédex ?")) {
+    // SÉCURITÉ : Fenêtre d'alerte pour demander confirmation à l'utilisateur
+    if (confirm("Voulez-vous vraiment effacer toute votre collection et recommencer à zéro ?")) {
         Object.keys(database).forEach(id => {
-            localStorage.removeItem("pokedex_" + id);
+            localStorage.removeItem("art_scanned_" + id);
             const card = document.getElementById(`item-${id}`);
             if (card) {
                 card.classList.add('locked');
                 card.querySelector('.status').innerText = "Inconnu";
                 card.querySelector('.status').style.background = "#444";
+                card.onclick = null; // Retire l'action de clic
+                card.style.cursor = "default";
             }
         });
         document.getElementById('captured-count').innerText = "0";

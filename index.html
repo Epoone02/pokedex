@@ -3,30 +3,28 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Almanah scolaire</title>
-    <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#ff3e3e">
+    <title>Carnet de Découvertes</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
     <header>
-        <h1>Almanah Ecole Albert camus </h1>
-        <div id="score">Découvertes : <span id="captured-count">0</span> / <span id="total-count">0</span></div>
+        <h1>Carnet de Découvertes</h1>
+        <div id="score">Œuvres trouvées : <span id="captured-count">0</span> / <span id="total-count">0</span></div>
     </header>
 
     <main id="pokedex-screen">
         <h2>Ta Collection Pixel Art</h2>
         
         <div class="grid" id="collection-grid"></div>
-
-        <button id="btn-scan">📷 Scanner un Pixel Art</button>
+        
+        <button id="btn-scan">📷 Scanner une œuvre</button>
         <button id="btn-reset" class="btn-reset">🔄 Réinitialiser la collection</button>
     </main>
 
     <div id="scanner-screen" class="hidden">
         <div class="scanner-container">
-            <h2>Pointe vers l'œuvre ✨✨d'art✨✨</h2>
+            <h2>Pointe vers l'œuvre d'un enfant</h2>
             <div class="camera-box">
                 <video id="webcam" autoplay playsinline></video>
             </div>
@@ -37,15 +35,23 @@
 
     <div id="popup-screen" class="hidden">
         <div class="popup-content">
-            <div class="popup-badge">✨ NOUVEAU ✨</div>
-            <h2 id="popup-title">Nom du lieu</h2>
-            <p id="popup-desc">Description...</p>
-            <button id="btn-close-popup">Ajouter a l'almanah</button>
+            <div id="popup-badge" class="popup-badge">✨ NOUVEAUTÉ ✨</div>
+            
+            <h2 id="popup-title">Titre de l'œuvre</h2>
+            
+            <div class="artist-info">
+                <p>👤 <strong>Artiste :</strong> <span id="popup-author"></span> (<span id="popup-class"></span>)</p>
+                <p>📅 <strong>Date de création :</strong> <span id="popup-date"></span></p>
+            </div>
+            
+            <p id="popup-desc" class="desc-text">Description...</p>
+            <button id="btn-close-popup">Ajouter à ma collection</button>
         </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest/dist/tf.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@latest/dist/teachablemachine-image.min.js"></script>
-    <script src="app.js?v=2"></script>
+    
+    <script src="app.js?v=4"></script>
 </body>
 </html>
