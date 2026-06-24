@@ -30,7 +30,7 @@ const database = {
 const SEUIL_CONFIANCE = 0.85;
 
 // Chemin vers les fichiers de ton IA (laissés en relatif pour GitHub)
-const MODEL_PATH = "./model/"; 
+const MODEL_PATH = "https://epoone02.github.io/Albert-Camus-carnet-decouverte/model/"; 
 
 // Variables globales de l'application
 let model = null;          // Contiendra le modèle IA chargé
