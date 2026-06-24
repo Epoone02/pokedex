@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pokédex Communal</title>
+    <title>Almanah scolaire</title>
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#ff3e3e">
     <link rel="stylesheet" href="style.css">
@@ -11,22 +11,22 @@
 <body>
 
     <header>
-        <h1>Pokédex de la Commune</h1>
+        <h1>Almanah Ecole Albert camus </h1>
         <div id="score">Découvertes : <span id="captured-count">0</span> / <span id="total-count">0</span></div>
     </header>
 
     <main id="pokedex-screen">
         <h2>Ta Collection Pixel Art</h2>
         
-        <div class="grid" id="pokedex-grid"></div>
+        <div class="grid" id="collection-grid"></div>
 
         <button id="btn-scan">📷 Scanner un Pixel Art</button>
-        <button id="btn-reset" class="btn-reset">🔄 Réinitialiser le Pokédex</button>
+        <button id="btn-reset" class="btn-reset">🔄 Réinitialiser la collection</button>
     </main>
 
     <div id="scanner-screen" class="hidden">
         <div class="scanner-container">
-            <h2>Pointe vers l'œuvre</h2>
+            <h2>Pointe vers l'œuvre ✨✨d'art✨✨</h2>
             <div class="camera-box">
                 <video id="webcam" autoplay playsinline></video>
             </div>
@@ -40,12 +40,12 @@
             <div class="popup-badge">✨ NOUVEAU ✨</div>
             <h2 id="popup-title">Nom du lieu</h2>
             <p id="popup-desc">Description...</p>
-            <button id="btn-close-popup">Ajouter au Pokédex</button>
+            <button id="btn-close-popup">Ajouter a l'almanah</button>
         </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest/dist/tf.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@latest/dist/teachablemachine-image.min.js"></script>
-    <script src="app.js"></script>
+    <script src="app.js?v=2"></script>
 </body>
 </html>

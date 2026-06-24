@@ -1,7 +1,7 @@
 {
-  "name": "Pokédex Communal",
-  "short_name": "Pokédex",
-  "description": "Scannez les lieux du village pour les collectionner !",
+  "name": "Almanah scolaire",
+  "short_name": "collection",
+  "description": "Scannez les pixel art des enfant de l'ecole albert camus",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#1a1a1a",

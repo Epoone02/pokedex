@@ -5,18 +5,18 @@
 // ============================================================
 const database = {
     "mairie": {
-        title: "La Mairie",
-        desc: "Construite en 1850 au cœur du village, elle possède une architecture typique.",
+        title: "crane",
+        desc: " c'est un test la team mais ça scan bien le crane",
         avatar: "🏛️"
     },
     "eglise": {
-        title: "L'Église Saint-Martin",
-        desc: "Son clocher en pierre de taille date du XIIe siècle et culmine à plus de 30 mètres.",
+        title: "Stitch",
+        desc: "une creature de film disney guez de fou en vrai",
         avatar: "⛪"
     },
     "parc": {
-        title: "Le Parc Communal",
-        desc: "Un havre de paix de 3 hectares avec des arbres centenaires et un étang de pêche.",
+        title: "BULBIZAR",
+        desc: "c'est un POKEMON WOWOWOWOWWOOW.",
         avatar: "🌳"
     },
     // Exemple de nouveau personnage ajouté facilement :
@@ -41,7 +41,7 @@ window.addEventListener('DOMContentLoaded', () => {
 
 // Génère les cartes HTML en fonction de la database
 function generateGrid() {
-    const grid = document.getElementById('pokedex-grid');
+    const grid = document.getElementById('collection-grid');
     grid.innerHTML = ''; // Vide la grille
     
     const totalItems = Object.keys(database).length;
@@ -64,7 +64,7 @@ function generateGrid() {
 function checkSavedItems() {
     let count = 0;
     Object.keys(database).forEach(id => {
-        if (localStorage.getItem("pokedex_" + id) === "true") {
+        if (localStorage.getItem("collection_" + id) === "true") {
             unlockCard(id);
             count++;
         }
@@ -143,7 +143,7 @@ async function predict() {
         // Si l'objet reconnu est bien dans notre base de données
         if (database[id]) {
             // On vérifie si l'utilisateur l'a DÉJÀ débloqué
-            const isAlreadyCaptured = localStorage.getItem("pokedex_" + id) === "true";
+            const isAlreadyCaptured = localStorage.getItem("collection_" + id) === "true";
 
             if (isAlreadyCaptured) {
                 // L'objet est déjà connu : on ne stoppe PAS le scanner, on change juste le texte
