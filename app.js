@@ -126,27 +126,38 @@ async function predict() {
 
     const predictions = await model.predict(video);
     
-    // On a retiré l'affichage des jauges ici (renderBars)
-
+    // Cherche la prédiction la plus haute
     const best = predictions.reduce((a, b) => a.probability > b.probability ? a : b);
 
     if (best.probability >= SEUIL_CONFIANCE) {
-        const id = best.className.toLowerCase().trim()
+        // Normalise le nom de la classe
+        let id = best.className.toLowerCase().trim()
             .normalize("NFD").replace(/[\u0300-\u036f]/g, "") 
             .replace(/\s+/g, "_"); 
 
+        // Si l'ID normalisé n'existe pas, on tente l'ID brut
+        if (!database[id]) {
+            id = best.className.toLowerCase().trim();
+        }
+
+        // Si l'objet reconnu est bien dans notre base de données
         if (database[id]) {
-            stopScanner();
-            detectedId = id;
-            showPopup(id);
-        } else {
-            const idBrut = best.className.toLowerCase().trim();
-            if (database[idBrut]) {
+            // On vérifie si l'utilisateur l'a DÉJÀ débloqué
+            const isAlreadyCaptured = localStorage.getItem("pokedex_" + id) === "true";
+
+            if (isAlreadyCaptured) {
+                // L'objet est déjà connu : on ne stoppe PAS le scanner, on change juste le texte
+                setStatus("⭐ Déjà capturé : " + database[id].title);
+            } else {
+                // C'est une NOUVELLE découverte ! On stoppe tout et on affiche le popup
                 stopScanner();
-                detectedId = idBrut;
-                showPopup(idBrut);
+                detectedId = id;
+                showPopup(id);
             }
         }
+    } else {
+        // Si la certitude redescend en dessous de 85%, on remet le texte par défaut
+        setStatus("✅ Pointe vers une œuvre !");
     }
 }
 
