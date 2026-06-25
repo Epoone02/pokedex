@@ -5,7 +5,7 @@
 // de la classe configurée lors de l'entraînement dans Teachable Machine.
 // ============================================================================
 const database = {
-    "test1": {
+    "sujet1": {
         title: "crane ",
         desc: "crane un peu moche c'est un test",
         avatar: "image/crane.jpg",         // L'émoji ou icône affiché sur la carte verrouillée/déverrouillée
@@ -13,7 +13,7 @@ const database = {
         classLevel: "chepa au pif",    // Sa classe
         date: "une anné"      // Date de création du dessin
     },
-    "test2": {
+    "sujet2": {
         title: "Stitch ",
         desc: "Statut de stitch peinte oep tjr un test",
         avatar: "image/stitch.jpg",
@@ -21,13 +21,21 @@ const database = {
         classLevel: "lezzzgoo",
         date: "uneeeee annnééé"
     },
-        "test3": {
+        "sujet3": {
             title: "Bulbizarreee",
             desc: "un pokemon mon garssss WOWOWOWWOO",
             avatar: "image/bulbizare.jpg",
             author: "je sais tjr pas",
             classLevel: "j'aimerais savoir",
             date: "we are ch.... NAAAANN"
+    },
+        "sujet4": {
+            title: "premier pixel",
+            desc: "i did it bro",
+            avatar: "image/bulbizare.jpg",
+            author: "Moi le goat",
+            classLevel: "ecole inge",
+            date: "25/06/2026"
     }
 
 };
