@@ -1,7 +1,7 @@
 * { box-sizing: border-box; margin: 0; padding: 0; }
 body { font-family: 'Segoe UI', Tahoma, sans-serif; background-color: #1a1a1a; color: #fff; padding: 15px; text-align: center; }
 
-header { margin-bottom: 25px; background: #ff3e3e; padding: 15px; border-radius: 10px; box-shadow: 0 4px 15px rgba(255,62,62,0.4); }
+header { margin-bottom: 25px; background: #3e8bff; padding: 15px; border-radius: 10px; box-shadow: 0 4px 15px rgba(255,62,62,0.4); }
 h1 { font-size: 24px; margin-bottom: 5px; }
 #score { font-weight: bold; font-size: 14px; background: rgba(0,0,0,0.2); display: inline-block; padding: 5px 10px; border-radius: 15px; }
 
@@ -16,15 +16,15 @@ h1 { font-size: 24px; margin-bottom: 5px; }
 .card .status { font-size: 12px; background: #444; padding: 2px 8px; border-radius: 10px; }
 
 /* Boutons d'action */
-button { background: #ff3e3e; color: white; border: none; padding: 15px 30px; font-size: 18px; border-radius: 30px; cursor: pointer; font-weight: bold; width: 100%; max-width: 300px; margin-top: 10px; }
+button { background: #3e8bff; color: white; border: none; padding: 15px 30px; font-size: 18px; border-radius: 30px; cursor: pointer; font-weight: bold; width: 100%; max-width: 300px; margin-top: 10px; }
 .btn-secondary { background: #555; }
 .btn-reset { background: #333; color: #999; font-size: 14px; padding: 10px 20px; border-radius: 10px; width: auto; border: 1px solid #444; }
-.btn-reset:hover { background: #cc3333; color: white; border-color: #cc3333; }
+.btn-reset:hover { background: #3e8bff; color: white; border-color: #3e8bff; }
 
 /* Scanner de caméra */
 #scanner-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #111; z-index: 10; display: flex; align-items: center; justify-content: center; }
 .scanner-container { width: 100%; max-width: 400px; padding: 20px; text-align: center; }
-.camera-box { width: 300px; height: 300px; margin: 15px auto; border-radius: 20px; overflow: hidden; border: 4px solid #ff3e3e; background: #000; }
+.camera-box { width: 300px; height: 300px; margin: 15px auto; border-radius: 20px; overflow: hidden; border: 4px solid #3e8bff; background: #000; }
 #webcam { width: 100%; height: 100%; object-fit: cover; }
 #scan-status { font-size: 14px; color: #aaa; margin: 10px 0; min-height: 20px; }
 
