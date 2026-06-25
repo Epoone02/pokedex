@@ -32,7 +32,7 @@ const database = {
         "sujet4": {
             title: "premier pixel",
             desc: "i did it bro",
-            avatar: "image/bulbizare.jpg",
+            avatar: "image/pixelart.png",
             author: "Moi le goat",
             classLevel: "ecole inge",
             date: "25/06/2026"
