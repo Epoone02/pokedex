@@ -9,22 +9,61 @@
 <body>
 
     <header>
-        <h1>Carnet de Découvertes</h1>
-        <div id="score">Œuvres trouvées : <span id="captured-count">0</span> / <span id="total-count">0</span></div>
+        <div class="header-top">
+            <button id="btn-menu" class="icon-btn">☰</button>
+            <h1 id="app-title">Carnet de Explorateur</h1>
+            <div style="width: 40px;"></div> </div>
+
+        <div class="progress-section">
+            <div class="score-text">Découvertes : <span id="captured-count">0</span> / <span id="total-count">0</span></div>
+            <div class="progress-bar-container">
+                <div id="progress-bar" class="progress-fill"></div>
+            </div>
+        </div>
     </header>
 
+    <div id="sidebar" class="sidebar hidden">
+        <div class="sidebar-content">
+            <button id="btn-close-menu" class="icon-btn close-btn">✖</button>
+            <h2>Paramètres</h2>
+            
+            <div class="settings-group">
+                <label for="username-input">Ton nom d'explorateur :</label>
+                <input type="text" id="username-input" placeholder="Ex: Léo">
+                <button id="btn-save-name" class="btn-small">Sauvegarder le nom</button>
+            </div>
+
+            <div class="settings-group" style="margin-top: auto;">
+                <p class="warning-text">Zone de danger</p>
+                <button id="btn-reset" class="btn-reset">🔄 Réinitialiser la collection</button>
+            </div>
+        </div>
+        <div id="sidebar-overlay" class="overlay"></div>
+    </div>
+
     <main id="pokedex-screen">
-        <h2>Ta Collection Pixel Art</h2>
-        
         <div class="grid" id="collection-grid"></div>
-        
         <button id="btn-scan">📷 Scanner une œuvre</button>
-        <button id="btn-reset" class="btn-reset">🔄 Réinitialiser la collection</button>
     </main>
 
-    <div id="scanner-screen" class="hidden">
+    <div id="detail-screen" class="hidden full-page">
+        <button id="btn-close-detail" class="back-btn">⬅ Retour</button>
+        <div class="detail-hero">
+            <img id="detail-img" src="" alt="Œuvre">
+        </div>
+        <div class="detail-content">
+            <h2 id="detail-title">Titre</h2>
+            <div class="artist-info">
+                <p>👤 <strong>Artiste :</strong> <span id="detail-author"></span> (<span id="detail-class"></span>)</p>
+                <p>📅 <strong>Date :</strong> <span id="detail-date"></span></p>
+            </div>
+            <p id="detail-desc" class="desc-text"></p>
+        </div>
+    </div>
+
+    <div id="scanner-screen" class="hidden full-page">
         <div class="scanner-container">
-            <h2>Pointe vers l'œuvre d'un enfant</h2>
+            <h2>Pointe vers l'œuvre</h2>
             <div class="camera-box">
                 <video id="webcam" autoplay playsinline></video>
             </div>
@@ -33,25 +72,16 @@
         </div>
     </div>
 
-    <div id="popup-screen" class="hidden">
-        <div class="popup-content">
-            <div id="popup-badge" class="popup-badge">✨ NOUVEAUTÉ ✨</div>
-            
-            <h2 id="popup-title">Titre de l'œuvre</h2>
-            
-            <div class="artist-info">
-                <p>👤 <strong>Artiste :</strong> <span id="popup-author"></span> (<span id="popup-class"></span>)</p>
-                <p>📅 <strong>Date de création :</strong> <span id="popup-date"></span></p>
-            </div>
-            
-            <p id="popup-desc" class="desc-text">Description...</p>
-            <button id="btn-close-popup">Ajouter à ma collection</button>
+    <div id="victory-screen" class="hidden full-page victory-bg">
+        <div class="victory-content">
+            <h1>🏆 INCROYABLE ! 🏆</h1>
+            <p id="victory-message">Félicitations, tu as découvert toutes les œuvres !</p>
+            <button id="btn-close-victory">Retour à la collection</button>
         </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest/dist/tf.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@latest/dist/teachablemachine-image.min.js"></script>
-    
-    <script src="app.js?v=4"></script>
+    <script src="app.js?v=5"></script>
 </body>
 </html>
